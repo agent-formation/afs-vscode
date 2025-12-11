@@ -187,7 +187,7 @@ npm run compile
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/agent-formation/.github/blob/main/CONTRIBUTING.md).
 
 ---
 
