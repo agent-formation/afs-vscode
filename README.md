@@ -74,7 +74,7 @@ Or search "Agent Formation" in the Extensions panel.
 
 ## Configuration
 
-```json
+```json5
 {
   // Enable/disable validation
   "afs.validate.enable": true,
