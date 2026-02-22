@@ -62,5 +62,5 @@ Please include:
 ## Release
 
 1. Bump `version` in `package.json`.
-2. Run `vsce package`.
-3. Publish via your normal release process.
+2. Create and push a git tag (for example `v0.2.8`).
+3. GitHub Actions workflow `.github/workflows/release-on-tag.yml` packages the VSIX and publishes a GitHub Release for that tag.
