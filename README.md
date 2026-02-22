@@ -1,195 +1,80 @@
 # Agent Formation for VS Code
 
-> VS Code extension for Agent Formation files — syntax highlighting, validation, linting, and IntelliSense.
+VS Code extension for [Agent Formation Schema](https://github.com/agent-formation/afs-spec) files (`.afs` and canonical `.yaml` layouts).
 
-⚠️ **Coming soon** — This repo is a placeholder.
+## Implemented
 
----
+- YAML syntax highlighting for `*.afs`
+- Schema-aware validation and IntelliSense for:
+  - canonical `.afs` paths (`formation.afs`, `agents/*.afs`, `mcp/*.afs`, `a2a/*.afs`)
+  - canonical `.yaml` paths (`formation.yaml`, `agents/*.yaml`, `mcp/*.yaml`, `a2a/*.yaml`)
+- Snippets:
+  - `afs-formation`
+  - `afs-agent`
+  - `afs-mcp`
+  - `afs-mcp-http`
+  - `afs-a2a`
+  - `afs-secret`
+  - `afs-usercred`
+- Interpolation completions for:
+  - `${{ secrets.NAME }}`
+  - `${{ env.VAR }}`
+  - `${{ user.credentials.SERVICE }}`
 
-## Planned Features
+## How Schema Compatibility Works
 
-### Syntax Highlighting
-Full syntax highlighting for `.afs` and `.yaml` formation files.
+This extension contributes JSON schemas that mirror the Agent Formation structure from:
 
-### File Icons
-Custom file icons for Agent Formation files in the explorer:
-- `formation.afs` — Formation icon
-- `agents/*.afs` — Agent icon
-- `mcp/*.afs` — MCP icon
-- `a2a/*.afs` — A2A icon
+- `formation.afs`
+- `agents/*.afs`
+- `mcp/*.afs`
+- `a2a/*.afs`
 
-### IntelliSense / Autocomplete
-- Field name completion
-- Value suggestions (e.g., LLM model names, auth types)
-- Secret reference completion (`${{ secrets. }}`)
-- Schema-aware suggestions based on context
+and binds them to YAML files through `yamlValidation` (provided by `redhat.vscode-yaml`).
 
-### Validation
-Real-time validation powered by `afs-cli`:
-- Red squiggles on errors
-- Problems panel integration
-- Quick fixes where applicable
+Canonical `.afs` and `.yaml` paths use dedicated schemas with non-overlapping matchers to avoid "Multiple JSON Schemas" warnings in VS Code.
 
-### Linting
-Best practice warnings:
-- Yellow squiggles for lint issues
-- Suggestions for improvements
-- Auto-fix support
+## Requirements
 
-### Hover Documentation
-Hover over any field to see:
-- Field description
-- Type information
-- Default value
-- Examples
+- VS Code `1.85.0` or higher
+- `redhat.vscode-yaml` (declared as an extension dependency and auto-installed)
 
-### Snippets
-Quick scaffolding:
-- `formation` — New formation file
-- `agent` — New agent definition
-- `mcp` — New MCP server
-- `a2a` — New A2A service
+## Installation (Local Dev)
 
-### Go to Definition
-- Click on agent references to jump to agent file
-- Click on MCP server references to jump to MCP file
-- Click on secret references to see where they're used
-
----
-
-## Installation
-
-### VS Code Marketplace
-```
-ext install agent-formation.vscode-afs
-```
-
-Or search "Agent Formation" in the Extensions panel.
-
-### Requirements
-- VS Code 1.80.0 or higher
-- `afs-cli` installed and in PATH (for validation/linting)
-
----
-
-## Configuration
-
-```json5
-{
-  // Enable/disable validation
-  "afs.validate.enable": true,
-  
-  // Enable/disable linting
-  "afs.lint.enable": true,
-  
-  // Path to afs-cli binary (if not in PATH)
-  "afs.cli.path": "/usr/local/bin/afs",
-  
-  // Validate on save
-  "afs.validateOnSave": true,
-  
-  // Auto-format on save
-  "afs.formatOnSave": false
-}
-```
-
----
+1. Open this project in VS Code.
+2. Press `F5` to launch Extension Development Host.
+3. Open an AFS file (for example `formation.afs`) and validate:
+   - completions are schema-aware
+   - errors show in Problems panel
 
 ## File Associations
 
-The extension automatically associates:
-- `*.afs` → Agent Formation
-- `formation.yaml` → Agent Formation
-- `agents/*.yaml` → Agent Formation
-- `mcp/*.yaml` → Agent Formation
-- `a2a/*.yaml` → Agent Formation
-
-To manually associate other files, add to `settings.json`:
+Default associations contributed by this extension:
 
 ```json
 {
   "files.associations": {
-    "*.myformation": "afs"
+    "*.afs": "yaml",
+    "**/*.afs": "yaml",
+    "secrets": "dotenv",
+    "**/secrets": "dotenv",
+    "formation.yaml": "yaml",
+    "**/formation.yaml": "yaml",
+    "agents/*.yaml": "yaml",
+    "**/agents/*.yaml": "yaml",
+    "mcp/*.yaml": "yaml",
+    "**/mcp/*.yaml": "yaml",
+    "a2a/*.yaml": "yaml",
+    "**/a2a/*.yaml": "yaml"
   }
 }
 ```
 
----
+## Planned Next Steps
 
-## Commands
-
-| Command | Description |
-|---------|-------------|
-| `AFS: Validate File` | Validate current file |
-| `AFS: Validate Workspace` | Validate all formation files |
-| `AFS: Lint File` | Lint current file |
-| `AFS: Format File` | Format current file |
-| `AFS: New Formation` | Create new formation from template |
-| `AFS: New Agent` | Create new agent from template |
-
----
-
-## Snippets
-
-| Prefix | Description |
-|--------|-------------|
-| `afs-formation` | New formation file scaffold |
-| `afs-agent` | New agent definition |
-| `afs-mcp` | New MCP server |
-| `afs-mcp-http` | New HTTP-based MCP server |
-| `afs-a2a` | New A2A service |
-| `afs-secret` | Secret reference |
-| `afs-usercred` | User credential reference |
-
----
-
-## Architecture
-
-```
-vscode-afs/
-├── src/
-│   ├── extension.ts       # Extension entrypoint
-│   ├── providers/
-│   │   ├── completion.ts  # IntelliSense
-│   │   ├── hover.ts       # Hover documentation
-│   │   ├── validation.ts  # Validation (via afs-cli)
-│   │   ├── linting.ts     # Linting (via afs-cli)
-│   │   └── formatting.ts  # Formatting (via afs-cli)
-│   ├── schema/            # JSON Schema definitions
-│   └── snippets/          # Snippet definitions
-├── syntaxes/
-│   └── afs.tmLanguage.json  # TextMate grammar
-├── icons/                 # File icons
-├── package.json           # Extension manifest
-└── language-configuration.json
-```
-
----
-
-## Development
-
-```bash
-# Clone
-git clone https://github.com/agent-formation/vscode-afs
-cd vscode-afs
-
-# Install dependencies
-npm install
-
-# Compile
-npm run compile
-
-# Run in development
-# Press F5 in VS Code to launch Extension Development Host
-```
-
----
-
-## Contributing
-
-See [CONTRIBUTING.md](https://github.com/agent-formation/.github/blob/main/CONTRIBUTING.md).
-
----
+- `afs-cli`-powered linting and richer semantic diagnostics
+- Hover docs with field metadata/examples
+- Go-to-definition across component references
 
 ## License
 

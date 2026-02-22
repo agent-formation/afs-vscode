@@ -1,0 +1,86 @@
+{
+  "name": "afs-vscode",
+  "displayName": "Agent Formation for VS Code",
+  "description": "Schema-aware YAML support for Agent Formation (.afs/.yaml): validation, IntelliSense, and snippets.",
+  "version": "0.2.8",
+  "icon": "icon.png",
+  "publisher": "muxi",
+  "license": "Apache-2.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "extensionDependencies": [
+    "redhat.vscode-yaml"
+  ],
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "keywords": [
+    "afs",
+    "agent formation",
+    "yaml"
+  ],
+  "activationEvents": [
+    "onLanguage:yaml"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "configurationDefaults": {
+      "files.associations": {
+        "*.afs": "yaml",
+        "**/*.afs": "yaml",
+        "secrets": "dotenv",
+        "**/secrets": "dotenv",
+        "formation.yaml": "yaml",
+        "**/formation.yaml": "yaml",
+        "agents/*.yaml": "yaml",
+        "**/agents/*.yaml": "yaml",
+        "mcp/*.yaml": "yaml",
+        "**/mcp/*.yaml": "yaml",
+        "a2a/*.yaml": "yaml",
+        "**/a2a/*.yaml": "yaml"
+      }
+    },
+    "yamlValidation": [
+      {
+        "fileMatch": "**/formation.afs",
+        "url": "./src/schemas/formation.schema.json"
+      },
+      {
+        "fileMatch": "**/agents/*.afs",
+        "url": "./src/schemas/agent.schema.json"
+      },
+      {
+        "fileMatch": "**/mcp/*.afs",
+        "url": "./src/schemas/mcp.schema.json"
+      },
+      {
+        "fileMatch": "**/a2a/*.afs",
+        "url": "./src/schemas/a2a.schema.json"
+      },
+      {
+        "fileMatch": "**/formation.yaml",
+        "url": "./src/schemas/formation.schema.json"
+      },
+      {
+        "fileMatch": "**/agents/*.yaml",
+        "url": "./src/schemas/agent.schema.json"
+      },
+      {
+        "fileMatch": "**/mcp/*.yaml",
+        "url": "./src/schemas/mcp.schema.json"
+      },
+      {
+        "fileMatch": "**/a2a/*.yaml",
+        "url": "./src/schemas/a2a.schema.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "yaml",
+        "path": "./src/snippets/afs.code-snippets"
+      }
+    ]
+  }
+}

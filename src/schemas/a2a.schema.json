@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Formation A2A Service Schema",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "description",
+    "url"
+  ],
+  "properties": {
+    "schema": {
+      "$ref": "./common.schema.json#/$defs/semver"
+    },
+    "id": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "name": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "description": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "string"
+    },
+    "license": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "auth": {
+      "$ref": "./common.schema.json#/$defs/a2aAuth"
+    },
+    "rate_limit": {
+      "type": "object",
+      "properties": {
+        "requests_per_minute": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "burst": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}

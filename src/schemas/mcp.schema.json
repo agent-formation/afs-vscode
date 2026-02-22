@@ -1,0 +1,112 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Formation MCP Server Schema",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "type"
+  ],
+  "properties": {
+    "schema": {
+      "$ref": "./common.schema.json#/$defs/semver"
+    },
+    "id": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "description": {
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "license": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "command",
+        "http"
+      ]
+    },
+    "install": {
+      "type": "string"
+    },
+    "command": {
+      "type": "string"
+    },
+    "args": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "endpoint": {
+      "type": "string",
+      "format": "uri"
+    },
+    "timeout_seconds": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "retry_attempts": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "auth": {
+      "$ref": "./common.schema.json#/$defs/mcpAuth"
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "command"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "command"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "http"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "required": [
+          "endpoint"
+        ]
+      }
+    }
+  ],
+  "additionalProperties": true
+}

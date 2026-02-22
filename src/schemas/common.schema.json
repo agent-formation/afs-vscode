@@ -1,0 +1,851 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Formation Common Definitions",
+  "$defs": {
+    "semver": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version (MAJOR.MINOR.PATCH)."
+    },
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "logLevel": {
+      "type": "string",
+      "enum": [
+        "debug",
+        "info",
+        "warn",
+        "warning",
+        "error"
+      ]
+    },
+    "secretInterpolation": {
+      "type": "string",
+      "pattern": "^\\$\\{\\{\\s*secrets\\.[A-Za-z0-9_.-]+\\s*\\}\\}$"
+    },
+    "envInterpolation": {
+      "type": "string",
+      "pattern": "^\\$\\{\\{\\s*env\\.[A-Za-z0-9_.-]+\\s*\\}\\}$"
+    },
+    "userCredentialInterpolation": {
+      "type": "string",
+      "pattern": "^\\$\\{\\{\\s*user\\.credentials\\.[A-Za-z0-9_.-]+\\s*\\}\\}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "pattern": "^(?!/)(?!.*\\.\\.).+",
+      "description": "Relative path without leading slash or parent traversal."
+    },
+    "llmSettings": {
+      "type": "object",
+      "properties": {
+        "temperature": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_tokens": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_retries": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fallback_model": {
+          "type": "string"
+        },
+        "max_size_mb": {
+          "type": "number",
+          "minimum": 0
+        },
+        "max_duration_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "language": {
+          "type": "string"
+        },
+        "cache_ttl_seconds": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "include_audio_analysis": {
+          "type": "boolean"
+        },
+        "image": {
+          "type": "object",
+          "properties": {
+            "max_size_mb": {
+              "type": "number",
+              "minimum": 0
+            },
+            "preprocessing": {
+              "type": "object",
+              "properties": {
+                "resize": {
+                  "type": "boolean"
+                },
+                "max_width": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "max_height": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "preprocessing": {
+          "type": "object",
+          "properties": {
+            "resize": {
+              "type": "boolean"
+            },
+            "max_width": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "max_height": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": true
+        },
+        "extraction": {
+          "type": "object",
+          "properties": {
+            "chunk_size": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "overlap": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "strategy": {
+              "type": "string"
+            },
+            "nlp": {
+              "type": "object",
+              "properties": {
+                "data_path": {
+                  "type": "string"
+                },
+                "spacy_model": {
+                  "type": "string"
+                },
+                "sentence_transformer": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": true
+            }
+          },
+          "additionalProperties": true
+        },
+        "caching": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "max_entries": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "p": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "hash_only": {
+              "type": "boolean"
+            },
+            "stream_chunk_strategy": {
+              "type": "string"
+            },
+            "stream_chunk_length": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "ttl": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "llmModelCapability": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "vision": {
+          "type": "string"
+        },
+        "audio": {
+          "type": "string"
+        },
+        "video": {
+          "type": "string"
+        },
+        "documents": {
+          "type": "string"
+        },
+        "embedding": {
+          "type": "string"
+        },
+        "streaming": {
+          "type": "string"
+        },
+        "api_key": {
+          "type": "string"
+        },
+        "settings": {
+          "$ref": "#/$defs/llmSettings"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "text"
+          ]
+        },
+        {
+          "required": [
+            "vision"
+          ]
+        },
+        {
+          "required": [
+            "audio"
+          ]
+        },
+        {
+          "required": [
+            "video"
+          ]
+        },
+        {
+          "required": [
+            "documents"
+          ]
+        },
+        {
+          "required": [
+            "embedding"
+          ]
+        },
+        {
+          "required": [
+            "streaming"
+          ]
+        }
+      ],
+      "additionalProperties": true
+    },
+    "streamAuth": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "bearer",
+            "basic",
+            "api_key",
+            "custom",
+            "token",
+            "sasl",
+            "env"
+          ]
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bearer"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "basic"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "username",
+              "password"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "api_key"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "header",
+              "key"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "headers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "token"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "sasl"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "username",
+              "password"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "mcpAuth": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "env",
+            "bearer",
+            "basic",
+            "api_key",
+            "none",
+            "token",
+            "custom",
+            "oauth",
+            "sasl"
+          ]
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "credentials": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bearer"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "basic"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "username",
+              "password"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "api_key"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "header",
+              "key"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "headers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "token"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "oauth"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "credentials"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "sasl"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "username",
+              "password"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "a2aAuth": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "none",
+            "bearer",
+            "basic",
+            "api_key",
+            "custom",
+            "token"
+          ]
+        },
+        "token": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "headers": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bearer"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "basic"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "username",
+              "password"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "api_key"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "header",
+              "key"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "headers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "token"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "token"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "mcpServer": {
+      "type": "object",
+      "properties": {
+        "schema": {
+          "$ref": "#/$defs/semver"
+        },
+        "id": {
+          "$ref": "#/$defs/nonEmptyString"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "command",
+            "http"
+          ]
+        },
+        "install": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri"
+        },
+        "timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retry_attempts": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "auth": {
+          "$ref": "#/$defs/mcpAuth"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "command"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "command"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "http"
+              }
+            },
+            "required": [
+              "type"
+            ]
+          },
+          "then": {
+            "required": [
+              "endpoint"
+            ]
+          }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "knowledgeSource": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "additionalProperties": true
+    },
+    "registryConfig": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "health_check_timeout_seconds": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "retry_attempts": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "url"
+      ],
+      "additionalProperties": true
+    },
+    "registryEntry": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri"
+        },
+        {
+          "$ref": "#/$defs/registryConfig"
+        }
+      ]
+    },
+    "userCredentialsConfig": {
+      "type": "object",
+      "properties": {
+        "mode": {
+          "type": "string",
+          "enum": [
+            "redirect",
+            "dynamic"
+          ]
+        },
+        "redirect_message": {
+          "type": "string"
+        },
+        "encryption": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "salt": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "require_https": {
+          "type": "boolean"
+        },
+        "credential_ttl_minutes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

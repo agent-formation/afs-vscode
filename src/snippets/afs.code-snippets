@@ -1,0 +1,131 @@
+{
+  "AFS Formation": {
+    "scope": "yaml",
+    "prefix": "afs-formation",
+    "description": "Core formation.afs scaffold.",
+    "body": [
+      "schema: \"1.0.0\"",
+      "id: \"${1:formation-id}\"",
+      "description: \"${2:Formation description}\"",
+      "",
+      "server:",
+      "  host: \"0.0.0.0\"",
+      "  port: ${3:8271}",
+      "  access_log: ${4:true}",
+      "  api_keys:",
+      "    admin_key: \"${{ secrets.${5:FORMATION_ADMIN_API_KEY} }}\"",
+      "    client_key: \"${{ secrets.${6:FORMATION_CLIENT_API_KEY} }}\"",
+      "",
+      "llm:",
+      "  api_keys:",
+      "    openai: \"${{ secrets.${7:OPENAI_API_KEY} }}\"",
+      "  models:",
+      "    - text: \"${8:openai/gpt-4o}\"",
+      "",
+      "mcp:",
+      "  servers: []",
+      "",
+      "a2a:",
+      "  enabled: ${9:true}",
+      "",
+      "agents: []"
+    ]
+  },
+  "AFS Agent": {
+    "scope": "yaml",
+    "prefix": "afs-agent",
+    "description": "agents/*.afs scaffold.",
+    "body": [
+      "schema: \"1.0.0\"",
+      "id: \"${1:agent-id}\"",
+      "name: \"${2:Agent Name}\"",
+      "description: \"${3:What this agent does}\"",
+      "active: ${4:true}",
+      "",
+      "system_message: |",
+      "  ${5:You are a specialized assistant.}",
+      "",
+      "a2a:",
+      "  internal: true",
+      "  external: true",
+      "",
+      "llm_models:",
+      "  - text: \"${6:openai/gpt-4o}\"",
+      "    settings:",
+      "      temperature: ${7:0.2}",
+      "",
+      "skills: []",
+      "mcp_servers: []"
+    ]
+  },
+  "AFS MCP Command": {
+    "scope": "yaml",
+    "prefix": "afs-mcp",
+    "description": "mcp/*.afs command server scaffold.",
+    "body": [
+      "schema: \"1.0.0\"",
+      "id: \"${1:local-tools}\"",
+      "description: \"${2:Local command tools}\"",
+      "active: true",
+      "type: \"command\"",
+      "install: \"${3:npm install -g @modelcontextprotocol/server-json-rpc}\"",
+      "command: \"${4:npx}\"",
+      "args: [\"${5:-y}\", \"${6:@modelcontextprotocol/server-json-rpc}\"]",
+      "timeout_seconds: ${7:60}",
+      "auth:",
+      "  type: \"env\"",
+      "  API_KEY: \"${{ secrets.${8:API_KEY} }}\""
+    ]
+  },
+  "AFS MCP HTTP": {
+    "scope": "yaml",
+    "prefix": "afs-mcp-http",
+    "description": "mcp/*.afs HTTP server scaffold.",
+    "body": [
+      "schema: \"1.0.0\"",
+      "id: \"${1:web-tools}\"",
+      "description: \"${2:External web tools}\"",
+      "active: true",
+      "type: \"http\"",
+      "endpoint: \"${3:https://external.com/mcp}\"",
+      "timeout_seconds: ${4:30}",
+      "retry_attempts: ${5:3}",
+      "auth:",
+      "  type: \"bearer\"",
+      "  token: \"${{ secrets.${6:MCP_TOKEN} }}\""
+    ]
+  },
+  "AFS A2A Service": {
+    "scope": "yaml",
+    "prefix": "afs-a2a",
+    "description": "a2a/*.afs service scaffold.",
+    "body": [
+      "schema: \"1.0.0\"",
+      "id: \"${1:service-id}\"",
+      "name: \"${2:Service Name}\"",
+      "description: \"${3:External A2A service description}\"",
+      "url: \"${4:https://service.example.com}\"",
+      "active: ${5:true}",
+      "auth:",
+      "  type: \"api_key\"",
+      "  header: \"${6:X-API-Key}\"",
+      "  key: \"${{ secrets.${7:SERVICE_API_KEY} }}\""
+    ]
+  },
+  "AFS Secret Reference": {
+    "scope": "yaml",
+    "prefix": "afs-secret",
+    "description": "Insert a ${{ secrets.NAME }} interpolation.",
+    "body": [
+      "${{ secrets.${1:SECRET_NAME} }}"
+    ]
+  },
+  "AFS User Credential Reference": {
+    "scope": "yaml",
+    "prefix": "afs-usercred",
+    "description": "Insert a ${{ user.credentials.SERVICE }} interpolation.",
+    "body": [
+      "${{ user.credentials.${1:service_name} }}"
+    ]
+  }
+}

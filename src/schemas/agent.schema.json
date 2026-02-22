@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Formation Agent Schema",
+  "type": "object",
+  "required": [
+    "schema",
+    "id",
+    "name",
+    "description"
+  ],
+  "properties": {
+    "schema": {
+      "$ref": "./common.schema.json#/$defs/semver"
+    },
+    "id": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "name": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "description": {
+      "$ref": "./common.schema.json#/$defs/nonEmptyString"
+    },
+    "active": {
+      "type": "boolean"
+    },
+    "author": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "license": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "system_message": {
+      "type": "string"
+    },
+    "a2a": {
+      "type": "object",
+      "properties": {
+        "internal": {
+          "type": "boolean"
+        },
+        "external": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": true
+    },
+    "llm_models": {
+      "type": "array",
+      "items": {
+        "$ref": "./common.schema.json#/$defs/llmModelCapability"
+      }
+    },
+    "role": {
+      "type": "string"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "knowledge": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "./common.schema.json#/$defs/knowledgeSource"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mcp_servers": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "$ref": "./common.schema.json#/$defs/mcpServer"
+          }
+        ]
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": true
+}
