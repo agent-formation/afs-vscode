@@ -2,7 +2,7 @@
   "name": "afs-vscode",
   "displayName": "Agent Formation for VS Code",
   "description": "Schema-aware YAML support for Agent Formation (.afs/.yaml): validation, IntelliSense, and snippets.",
-  "version": "0.2.8",
+  "version": "0.3.0",
   "icon": "icon.png",
   "publisher": "muxi",
   "license": "Apache-2.0",
