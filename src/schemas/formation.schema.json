@@ -33,6 +33,10 @@
     "runtime": {
       "type": "string"
     },
+    "init": {
+      "type": "string",
+      "description": "Shell command to run before services are initialized. Use for environment setup (creating directories, installing tools, seeding data). Non-zero exit fails the formation. 120s timeout. cwd = formation directory."
+    },
     "server": {
       "type": "object",
       "properties": {
